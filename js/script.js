@@ -102,4 +102,21 @@ tabsParent.addEventListener('click', function(event) {
   }
 
   setClock('.timer', deadline);
+
+  // modal
+
+  const modalTrigger=document.querySelectorAll('[data-modal]');
+  const modalWindow = document.querySelector('.modal');
+  const modalClose = document.querySelector('.modal__close');
+
+  modalTrigger.forEach(function(elem, i) {
+    modalTrigger[i].addEventListener('click', function() {
+      modalWindow.style.display='block';
+    });
+  });
+
+  modalClose.addEventListener('click', function() {
+    modalWindow.style.display='none';
+  });
+  
 });
