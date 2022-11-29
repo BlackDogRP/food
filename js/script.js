@@ -105,18 +105,33 @@ tabsParent.addEventListener('click', function(event) {
 
   // modal
 
-  const modalTrigger=document.querySelectorAll('[data-modal]');
-  const modalWindow = document.querySelector('.modal');
-  const modalClose = document.querySelector('.modal__close');
+  const modalTrigger=document.querySelectorAll('[data-modal]'),
+        modal = document.querySelector('.modal'),
+        modalClose = document.querySelector('[data-close]');
 
-  modalTrigger.forEach(function(elem, i) {
-    modalTrigger[i].addEventListener('click', function() {
-      modalWindow.style.display='block';
+    modalTrigger.forEach(btn => {
+      btn.addEventListener('click', function() {
+        modal.classList.toggle('show');
+        document.body.style.overflow='hidden';
+      });
     });
+
+    function closeModal() {
+      modal.classList.toggle('show');
+      document.body.style.overflow='';
+    }
+
+  modalClose.addEventListener('click', closeModal);
+  
+  modal.addEventListener('click', (e) => {
+    if(e.target===modal) {
+      closeModal();
+    }
   });
 
-  modalClose.addEventListener('click', function() {
-    modalWindow.style.display='none';
-  });
-  
+  document.addEventListener('keydown', (e) => {
+    if(e.code === "Escape" && modal.classList.contains('show')) {
+      closeModal();
+    }
+  })
 });
