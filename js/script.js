@@ -141,7 +141,7 @@ tabsParent.addEventListener('click', function(event) {
     }
   });
 
-  const modalTimerId = setTimeout(openModal, 5000);
+  const modalTimerId = setTimeout(openModal, 500000);
 
   function showModalByScroll() {
     if(window.pageYOffset+document.documentElement.clientHeight >= document.documentElement.scrollHeight -1) {
@@ -221,4 +221,88 @@ tabsParent.addEventListener('click', function(event) {
     '.menu .container',
     'menu__item'
   ).render();
+
+  // Forms
+
+  const forms = document.querySelectorAll('form');
+
+  const message = {
+    loading: 'img/form/spinner.svg',
+    success: 'Спасибо! Скоро мы с вами свяжемся',
+    failure: 'Что-то пошло не так...'
+  };
+
+  forms.forEach(item => {
+    postData(item);
+  });
+
+  function postData(form) {
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        let statusMessage = document.createElement('img');
+        statusMessage.src = message.loading;
+        statusMessage.style.cssText = `
+            display: block;
+            margin: 0 auto;
+        `;
+        form.insertAdjacentElement('afterend', statusMessage);
+    
+        
+
+        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        const formData = new FormData(form);
+
+        const object = {};
+        formData.forEach(function(value, key){
+            object[key] = value;
+        });
+        const json = JSON.stringify(object);
+
+        fetch('server.php', {
+          method:"POST",
+          // headers: {
+          //   'Content-type': 'application/json'
+          // }
+          body:formData
+        }).then(data=>data.text())
+        .then(data=>{
+          console.log(request.response);
+          showThanksModal(message.success);
+          form.reset();
+          statusMessage.remove();
+        }).catch(() => {
+          showThanksModal(message.failure);
+        }).finally(() => {
+          form.reset();
+        });
+    });
+}
+
+  function showThanksModal(message) {
+    const prevModalDialog = document.querySelector('.modal__dialog');
+
+    prevModalDialog.classList.add('hide');
+    openModal();
+
+    const thanksModal = document.createElement('div');
+    thanksModal.classList.add('modal__dialog');
+    thanksModal.innerHTML = `
+        <div class="modal__content">
+            <div class="modal__close" data-close>×</div>
+            <div class="modal__title">${message}</div>
+        </div>
+    `;
+    document.querySelector('.modal').append(thanksModal);
+    setTimeout(() => {
+        thanksModal.remove();
+        prevModalDialog.classList.add('show');
+        prevModalDialog.classList.remove('hide');
+        closeModal();
+    }, 4000);
+}
+
+this.fetch('http://localhost:3000/menu')
+  .then(data => data.json())
+  .then(res=> console.log(res));
 });
